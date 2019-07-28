@@ -1,0 +1,61 @@
+Method 3:
+
+( Please refer Method 1 and 2 solutions before reading further as this is a continued version of them. Or Method 1 and Method 2 approaches can be read at the bottom. )
+
+After Method 2 it struck me that there is some common use case across all the item updates. Only magintudde of increase or decrease would change w.r.t to SellIn.
+
+So I decided to convert the requirements to properties and have them in a config file. I moved from service based approach to property based approach. 
+
+I extended the Item class and added property fields. Have made way for some special conditions as well like backstage passes. Now single method can update all types of items based on property.
+
+Now the code is small and there is no hard coding of any numbers or items. Code has been written to handle special conditions with appropriate logical operations.
+
+However this method is not suited if some complex logic comes in as we have to make some changes to update code. Based the business use case we can choose Method 1 or 2 or 3.
+
+
+*******************************************************************************************************************************************************************************************************************************************************************
+Method 2:
+
+( Please refer Method 1 solution before reading further as this is a slight variation to Method 1. Or Method 1 approach can be read at the bottom. )
+
+I wanted to see if I can add a new category of item without changing any code. Either reuse the existing services or add a new service with appropriate interface contracts.
+So there would be either no code change or addition of new services. For this followed settings based approach.
+
+Settings file will have the items / inventory with mapping to its service type. Even the serices to be registered are deriving from the config. As mentioned in Method 1, I am using reflection based resolver.
+ServiceItem and ServiceConfiguartion classes are for reading the services/ dependencies from the config.
+
+For new items all we have to do is update the settings / config file, test and deploy only the settings file (if no new service is introduced). But this approach comes with a drawback i.e config file should be maintained with utmost correctness.
+If there are any wrong values in config then application will break. But if we make sure that config is maintained well then this is the best method giving the highest level of flexibility with no or minimum code change.
+
+
+*******************************************************************************************************************************************************************************************************************************************************************
+Method 1:
+Initial approach:
+
+1) Check if existing code is working as per the requirement
+2) Add test cases covering all the scenarios
+3) Run code coverage and start combining conditions and remove redundant code
+4) Segregate code according to category of items 
+5) Only certain categories of items had different mechanisms rest all followed same pattern like decrease in quality by 1 as sellIn decreases, etc
+
+Design Approach:
+
+1) The existing code was not good enough to handle new categories because the core logic has to be changed. 
+2) Move the logic to update each category to different services
+3) Also it was not following SOLID principles. Since the code wasn't big enough I thought it would be better to migrate to .net core and to leverage the built-in dependency injection management.
+4) Register these services as dependecies in Main method
+5) Each service has its own empty interface which inturn implements IInventoryUpdateStrategy interface which is a common interface for all the update services. 
+This approach actually enables to extend the contract for any particular category if required also this eliminates the need of enum based service resolver if all services implements the same interface.
+6) There were multiple choices ahead like factory based or strategy based approach, wherein there would be a switch case which returns the instance of the respective services.
+7) But above approach is not good if we have to keep adding new category of items because we have to keep changing the strategy mapper.
+8) So I decided to keep the code adhering to SOLID principles. With separate serivices for each category addresses the single responsibilty principle also takes care of separation of concern.
+9) With DI there is a flexibility of extending or changing the logic for any category update service without hampering the other code.
+10) I have moved the default items to helper class. This class can be used for any other common functionalities.
+11) Code should allow for extention and restrict modification which is Open-Closed principle. So I decided to go for reflection based service resolver approach.
+12) Now if any new category has to be added then all we have to do is create a service ( with interface ) and register the service.
+13) Then Assign the type of service implementation to Strategy field of ItemList object which resolves to service instance with reflection
+14) There is a performance related drawback in using the reflection but since this method being executed only one time in a day, it was worth the tradeoff for the flexibility it offers for adding the new category of products. 
+15) There are certain lines of code repeated in each services. I decided to keep it as it is, did not wanted to abstract too much. Sometimes small redundancies are better than abstraction hell.
+16) Since Item class is not allowed to be modified I decided to add a new class Inventory which extends the Item class for adding the Strategy field. 
+17) GetStrategy expects IInventoryUpdateStrategy type, all the services has to implement it.
+18) Have added a global exception handler. Can implement specific exception handler as well.
