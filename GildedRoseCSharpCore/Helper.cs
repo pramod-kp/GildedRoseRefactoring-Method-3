@@ -16,24 +16,7 @@ namespace GildedRoseCSharpCore
                 .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
 
             return builder.Build();
-        }
-
-        /// <summary>
-        /// Method to map string to operator
-        /// </summary>
-        public static bool LogicalOperators(this string logic, int x, int y)
-        {
-            switch (logic)
-            {
-                case ">": return x > y;
-                case ">=": return x >= y;
-                case "<": return x < y;
-                case "<=": return x <= y;
-                case "==": return x == y;
-                case "!=": return x != y;
-                default: throw new Exception("invalid logic");
-            }
-        }
+        }        
 
         /// <summary>
         /// Method to handle the global exceptions

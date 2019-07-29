@@ -35,8 +35,7 @@ namespace GildedRoseCSharpCore.Services
             if (specialQuality.Count > 0)
             {
                 var splCondition = item.Properties.SpecialConditions.FirstOrDefault(x => x.SellIn == item.SellIn + specialQuality.Min());
-                item.Quality = splCondition.Operator.LogicalOperators(item.SellIn, splCondition.SellIn) ? 
-                    item.Quality + splCondition.QualityIncrOrDecr : item.Quality + item.Properties.QualityIncrOrDecr;
+                item.Quality = item.Quality + splCondition.QualityIncrOrDecr;
             }
             else
                 item.Quality = item.Quality + item.Properties.QualityIncrOrDecr;
